@@ -1,0 +1,62 @@
+apt-get update
+apt-get upgrade
+apt -y install samba
+systemctl status smbd.service
+#apt -y install samba-common
+#apt-get install cifs-utils
+cd /mnt/Data
+
+mkdir RepInfra
+chmod 777 RepInfra
+
+
+
+cd /etc/samba
+ls
+
+vim smb.conf
+	
+		# Change this to the workgroup/NT-domain name your Samba server will part of
+   		#Remplazar workgroup por carsa.local
+		workgroup = carsa.local
+
+;   write list = root, @lpadmin
+[RepInfra]
+comment = Archivos compartidos de Infraestructura
+browseable = yes
+path= /mnt/Data/RepInfra
+readonly = no
+create mask = 0777
+directory mask = 0777
+writeable = yes
+public = yes
+share = yes
+
+/etc/samba# /etc/init.d/smbd restart
+
+
+#CREACION DE UN USUARIO
+
+
+/usr/sbin/useradd soporte -G sambashare
+
+smbpasswd -a soporte
+
+#New SMB password:
+#Retype new SMB password:
+#Added user soporte.
+
+vim smb.conf
+
+#Validar que esten estos 2 parametros
+writeable = yes
+valid users = @sambashare
+
+/usr/sbin/service smbd restart o service smbd restart
+
+
+#Se valida en windows la ip del linux para ver carpetas compartidas 
+# y se debe poder acceder con credenciales
+
+
+https://www.youtube.com/watch?v=pECAr_kDyrg
